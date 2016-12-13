@@ -28,6 +28,7 @@ def listprint(lt):
         
 def matrixTransform(matrix,minSize=1100):
 #MODIFY ME~~~~~~~~~~~~~~~~~~~~~~~~~^^^^
+    minSize=minSize-minSize%2
     newMatrix=[]
     if xMax-xMin>yMax-yMin:
         span=xMax-xMin
@@ -36,8 +37,6 @@ def matrixTransform(matrix,minSize=1100):
     if span >= minSize:
         minSize=span
     buffer=round((minSize-(span))/2)
-    print("buffer:")
-    print(buffer)
     for x in range(buffer):
         newCol=[]
         for y in range(minSize):
@@ -58,7 +57,7 @@ def matrixTransform(matrix,minSize=1100):
         for y in range(buffer-1):
             newCol.append(0)
         newMatrix.append(newCol)
-    for x in range(buffer):
+    for x in range(buffer-1):
         newCol=[]
         for y in range(minSize):
             newCol.append(0)
@@ -251,7 +250,6 @@ def run(angSet,lenSet,angRatSet,scale,angleScale,maxIter):
         fileout.write("\n")
     fileout.close()
     pl.savefig("density"+str(bigcounter)+".png")
-    print(len(grid))
     
     #~~~~~~~~~resetting variables
     storage=[]
