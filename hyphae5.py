@@ -25,14 +25,28 @@ def listprint(lt):
     for elt in lt:
         print(elt)
         
-def matrixTransform(matrix):
+        
+def matrixTransform(matrix,minSize=1100):
+#MODIFY ME~~~~~~~~~~~~~~~~~~~~~~~~~^^^^
     newMatrix=[]
     if xMax-xMin>yMax-yMin:
         span=xMax-xMin
     else:
         span=yMax-yMin
+    if span >= minSize:
+        minSize=span
+    buffer=round((minSize-(span))/2)
+    print("buffer:")
+    print(buffer)
+    for x in range(buffer):
+        newCol=[]
+        for y in range(minSize):
+            newCol.append(0)
+        newMatrix.append(newCol)
     for x in range(xMin,xMin+span+1):
         newCol=[]
+        for y in range(buffer):
+            newCol.append(0)
         for y in range(yMin,yMin+span+1):
             if x in matrix:
                 if y in matrix[x]:
@@ -41,6 +55,13 @@ def matrixTransform(matrix):
                     newCol.append(0)
             else:
                 newCol.append(0)
+        for y in range(buffer-1):
+            newCol.append(0)
+        newMatrix.append(newCol)
+    for x in range(buffer):
+        newCol=[]
+        for y in range(minSize):
+            newCol.append(0)
         newMatrix.append(newCol)
     return newMatrix
 
