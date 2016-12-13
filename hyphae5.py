@@ -250,6 +250,6 @@ run(["radiate_3","radiate_3","bi"],["constant_5","constant_1"],40)
 run(["radiate_5","radiate_5","bi"],["constant_5","constant_1"],40)
 """
 
-run(["radiate_10","bi"],["constant_2","constant_.75","constant_1","constant_.7"],[1,.5,1.5,.75],40,pi/2,5)
+run(["radiate_10","bi"],["constant_2","constant_.75","constant_1","constant_.7"],[1,.5,1.5,.75],40,pi/2,4)
 
 run(["radiate_3","radiate_1","tri","bi"],["constant_2","constant_3","constant_.2","constant_1"],[1,1,0.3,1],40,pi/2,5)

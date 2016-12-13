@@ -1,5 +1,6 @@
 import math
 import numpy
+import pylab as pl
 
 global final
 global Ivalues
@@ -23,12 +24,39 @@ Vcell = 1.1664 *(10**-8) #2.0 * (10**-9) #cm cubed
 PminA = 2.8 * (10**-10)
 PminPl = 2.8 * (10**-10)
 
+# 
+# def magList(list, size):
+#     newList = []
+#     for x in range(size):
+#         row = []
+#         for y in range(size):
+#             oldVal = list[x][y]
+#             newVal = (10**10) * oldVal
+#             
+#             row.append(newVal)
+#         newList.append(row)
+#     return newList
 
-"Takes in text file and outputs list of lengths in each cell in ordered matrix"
-def findLength():  # currently an example 9x9 list
-    lengthList = [[0, 0, 0, 0, 0.0048, 0, 0, 0, 0], [0, 0, 1.8372, 8.4285, 8.8784, 8.4285, 1.8372, 0, 0], [0, 0.5828, 6.9524, 4.5896, 3.5552, 4.5896, 6.9524, 0.5828, 0], [0, 4.1655, 6.7463, 1.3411, 2.6868, 1.3411, 6.7463, 4.1655, 0], [0.0024, 7.2906, 3.8416, 1.3434, 3.4846, 1.3434, 3.8416, 7.2906, 0.0024], [0, 8.5044, 3.9817, 2.9767, 0.0, 2.9767, 3.9817, 8.5044, 0], [0, 3.3541, 9.737, 6.1384, 4.128, 6.1384, 9.737, 3.3541, 0], [0, 0, 2.0997, 4.2414, 5.7028, 4.2414, 2.0997, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0]]  #[[2, 2],[1, 1]]
 
-    return lengthList
+
+def useList(fileName):
+    fileN = open(fileName, 'r')
+    #fileN = open('lenMatrix_small.txt', 'r')
+
+    uncleanlist = fileN.read()
+    
+    list1 = uncleanlist.split("\n")
+    list2=[]
+    for line in list1:
+        blankrow=[]
+        row=line.split("\t")
+        for itm in row:
+            #print("___"+itm+"____")
+            if itm!="":
+                blankrow.append(float(itm))
+        if blankrow!=[]:
+            list2.append(blankrow)
+    return list2
 
 
 "Makes surface area matrix"
@@ -72,7 +100,7 @@ def fungiInit(lenList, size):
                 NutConc_Fungi = 0
                 row.append(NutConc_Fungi)
             else:
-                NutConc_Fungi = (Ivalues[0] - 0.0001)
+                NutConc_Fungi = 0 #(Ivalues[0] #- 0.0001)
                 row.append(NutConc_Fungi)
         fungiInitMatrix.append(row)
     
@@ -93,14 +121,16 @@ def plantUptake(SAroot, soilVal):   #plantUptake(SAroot, soilVal):    # This doe
 
 def fungiUptake(saMatrixVal, soilVal):
     global ImaxPA
-    global Vcell
+    # global Vcell
     global KminPA
     global PminA
 
     fungiUptake = (saMatrixVal*ImaxPA)*((soilVal/Vcell) - PminA)/(KminPA + ((soilVal/Vcell) - PminA))
-    
-    if soilVal < fungiUptake:
+    if fungiUptake > soilVal:
         fungiUptake = soilVal
+           
+    if fungiUptake<0:
+        fungiUptake = 0
     
     return fungiUptake
 
@@ -109,10 +139,12 @@ def fungiUptake(saMatrixVal, soilVal):
 
 def soilUpdate(previousVal, saMatrixVal):
     newSoilVal = previousVal - fungiUptake(saMatrixVal, previousVal) #- plantUptake(saMatrixVal, previousVal)    #currently using sa for hyphe inplant uptake but should be root sa value
+    #print(fungiUptake(saMatrixVal,previousVal))
     return newSoilVal
 
 def fungiUpdate(previousfungiVal, saMatrixVal, previousSoilVal):
     newFungiVal = previousfungiVal + fungiUptake(saMatrixVal, previousSoilVal)
+    #print(fungiUptake(saMatrixVal, previousSoilVal))
     return newFungiVal
     
 
@@ -120,8 +152,13 @@ def fungiUpdate(previousfungiVal, saMatrixVal, previousSoilVal):
 def soilConc(steps, size, initialMatrix, saMatrix, Vs):
     #soilMatrix = loopMatrix(initialMatrix, size, steps, soilUpdate, saMatrix, Vs)
     soilMatrix = []
-    soilMatrix.append(initialMatrix)   
-        
+    soilMatrix.append(initialMatrix) 
+    
+    #magIntList = magList(initialMatrix, size)
+    
+    pl.matshow(initialMatrix, cmap = pl.cm.jet, vmin = 0, vmax = 2 * (10 **(-13)))
+    pl.show() 
+    
     for num in range(steps):
         #print('timestep', num)
         previousTS = soilMatrix[num]
@@ -148,9 +185,15 @@ def soilConc(steps, size, initialMatrix, saMatrix, Vs):
                 saMatrixVal = saMatrix[x][y]
                 newVal = soilUpdate(previousVal, saMatrixVal) + addFlowMatrix[x][y]
                 row.append(newVal)
-            timestep.append(row)           
-           
+            timestep.append(row)  
+        
+        pl.matshow(timestep, cmap = pl.cm.jet, vmin = 0, vmax = 2 * (10 **(-13)))
+        pl.show()
+        
         soilMatrix.append(timestep)
+    
+    
+
     
     return soilMatrix
 
@@ -159,6 +202,7 @@ def fungiConc(steps, size, initialMatrix, saMatrix, soilMatrix):
     fungiFinal.append(initialMatrix)
     
     for num in range(steps):
+        #print('ts = ', num)
         previousTS = fungiFinal[num]
         timestep = []
         
@@ -183,8 +227,8 @@ def fungiConc(steps, size, initialMatrix, saMatrix, soilMatrix):
 "Inflow Function"
 def inflow(tstepList, size):
     inflowValGrid = []
-    d = 0.001 #cm
-    alpha = 0.0000000000000005
+    d = 0.0018 #cm
+    alpha = 8.1 * (10 ** -7)
     cons = 1.1664 * (10 **(-12))  # P per cell
     for row in range(size):
         #print("row", row)
@@ -271,6 +315,7 @@ def inflow(tstepList, size):
     return inflowValGrid
 
 
+
 "main function to call, intakes desired number of timesteps and size."
 def main(steps, size):
     global final
@@ -280,17 +325,25 @@ def main(steps, size):
     #Parameters
     TotalVolume = 0.00008 #cm^3
     Vs = Vcell
-    Ma = 10  
+    #Ma = 10  
     
     #Initial values
     PSti = 2 * (10 **(-13))  #grams of phosphorus
-    PAti = 0.001*Ma
+    PAti = 0
     Ivalues = [PAti, PSti]
     
     #Inital Matrices
     InitalSoilMatrix = buildSoil(size)
     #print(InitalSoilMatrix)
-    lenMatrix = findLength()
+    
+    lenMatrix = useList('lenMatrix_199.txt')
+    
+    #lenMatrix = useList('lenMatrix0.txt') #close 
+    
+    #lenMatrix = useList('lenMatrix1.txt') #far
+    
+    #print('lengthval', len(lenMatrix))
+    
     fungiMatrix = fungiInit(lenMatrix, size)
     #print(fungiMatrix)
     
@@ -303,9 +356,12 @@ def main(steps, size):
     #Append soil and fungi matrices
     final.append(soil)
     final.append(fungi)
-    print('Soil:  ', soil)
-    print('Fungi: ', fungi)
+    #print('Soil:  ', soil)
+    #print('Fungi: ', fungi)
 
     return final
 
-print("Final:  ", main(2, 9))
+
+desiredTS = 15
+desiredSize = 199 # long 841 #short 471
+main(desiredTS, desiredSize)
