@@ -11,6 +11,9 @@ global KminPpl
 global Vcell
 global PminA
 global PminPl
+global named
+
+named = input("suffix?")
 
 final = []
 Ivalues = []
@@ -321,6 +324,7 @@ def main(steps, size):
     global final
     global Ivalues
     global Vcell
+    global named
     
     #Parameters
     TotalVolume = 0.00008 #cm^3
@@ -335,8 +339,6 @@ def main(steps, size):
     #Inital Matrices
     InitalSoilMatrix = buildSoil(size)
     #print(InitalSoilMatrix)
-    
-    named = input()
     
     lenMatrix = useList('lenMatrix_' + named + '.txt')
     
@@ -367,17 +369,19 @@ def main(steps, size):
 
 
 desiredTS = 15
-desiredSize = 199 # long 841 #short 471
+desiredSize = 1100 # long 841 #short 471
 #main(desiredTS, desiredSize)
 
 
 def CalcED(ts, size):
+    global named
     ratioList = []
     BioMassRatioList = []
     finalMainList =  main(ts, size)
     fungiList = finalMainList[1]
-
-    lengthMatrix = useList('lenMatrix_199.txt')
+    
+    
+    lengthMatrix = useList('lenMatrix_' + named + '.txt')
     
     lengthTotal = 0
     for x in range(size):        #Adds up length of all hyphe in system

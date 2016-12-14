@@ -37,6 +37,7 @@ def matrixTransform(matrix,minSize=1100):
     if span >= minSize:
         minSize=span
     buffer=round((minSize-(span))/2)
+
     for x in range(buffer):
         newCol=[]
         for y in range(minSize):
@@ -217,7 +218,7 @@ def branch(angstyle, lenstyle, angRatios, dist, initAng, depth, initDir=0, loc1=
             
 
 
-def run(angSet,lenSet,angRatSet,scale,angleScale,maxIter):
+def run(angSet,lenSet,angRatSet,scale,angleScale,maxIter,saveName):
     global storage
     global lenMatrix
     global xMax
@@ -225,7 +226,6 @@ def run(angSet,lenSet,angRatSet,scale,angleScale,maxIter):
     global yMax
     global yMin
     global bigcounter
-
     branch(listmaker(angSet,maxIter), listmaker(lenSet,maxIter), listmaker(angRatSet,maxIter), scale, angleScale, maxIter)
     
     grid=matrixTransform(lenMatrix)
@@ -237,19 +237,20 @@ def run(angSet,lenSet,angRatSet,scale,angleScale,maxIter):
     ax.set_aspect('equal', 'datalim')
     ax.margins(0.1)
     pl.show()
-    pl.savefig("branches"+str(bigcounter)+".png")
-    
+    pl.savefig("branches_"+saveName+".png")
+
     pl.matshow(grid, cmap=pl.cm.jet)
     pl.show()
     
     #~~~~~~~~~~saving data
-    fileout=open('lenMatrix'+str(bigcounter)+'.txt','w')
+    fileout=open('lenMatrix_'+saveName+'.txt','w')
     for item in grid:
         for thing in item:
             fileout.write(str(thing)+"\t")
         fileout.write("\n")
     fileout.close()
-    pl.savefig("density"+str(bigcounter)+".png")
+    pl.savefig("density_"+saveName+".png")
+    #pl.close()
     
     #~~~~~~~~~resetting variables
     storage=[]
@@ -259,7 +260,7 @@ def run(angSet,lenSet,angRatSet,scale,angleScale,maxIter):
     yMax=0
     yMin=0
     
-    bigcounter=bigcounter+1
+    #bigcounter=bigcounter+1
 """
 #depth=8
 run(["radiate_3","bi"],["zero","constant_1"],40)
@@ -268,7 +269,9 @@ run(["radiate_5","bi"],["zero","constant_1"],40)
 run(["radiate_3","radiate_3","bi"],["constant_5","constant_1"],40)
 run(["radiate_5","radiate_5","bi"],["constant_5","constant_1"],40)
 """
+for pattern in range(8,9):
+    pat=str(pattern)
+    
+    run(["radiate_"+pat,"bi"],["constant_2","constant_.75","constant_1","constant_.7"],[1,.5,1.5,.75],40,pi/2,4,"short_"+pat)
 
-run(["radiate_10","bi"],["constant_2","constant_.75","constant_1","constant_.7"],[1,.5,1.5,.75],40,pi/2,4)
-
-run(["radiate_3","radiate_1","tri","bi"],["constant_2","constant_3","constant_.2","constant_1"],[1,1,0.3,1],40,pi/2,5)
+    run(["radiate_"+str(pattern),"radiate_1","tri","bi"],["constant_2","constant_3","constant_.2","constant_1"],[1,1,0.3,1],40,pi/2,5,"mid_"+pat)
