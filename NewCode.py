@@ -368,4 +368,82 @@ def main(steps, size):
 
 desiredTS = 15
 desiredSize = 199 # long 841 #short 471
-main(desiredTS, desiredSize)
+#main(desiredTS, desiredSize)
+
+
+def CalcED(ts, size):
+    ratioList = []
+    BioMassRatioList = []
+    finalMainList =  main(ts, size)
+    fungiList = finalMainList[1]
+
+    lengthMatrix = useList('lenMatrix_199.txt')
+    
+    lengthTotal = 0
+    for x in range(size):        #Adds up length of all hyphe in system
+        for y in range(size):
+            val = lengthMatrix[x][y]
+            lengthTotal = lengthTotal + val
+    #print("total length", lengthTotal)
+    
+    IndividualStepSums = []    
+    for steps in range(ts):
+        sumTotal = 0
+        for x in range(size):
+            for y in range(size):
+                val = fungiList[steps][x][y]
+                sumTotal =  sumTotal + val
+        IndividualStepSums.append(sumTotal)
+    #print(IndividualStepSums)
+    #print("length", len(IndividualStepSums))
+    
+    mass = lengthTotal * 0.2 * math.pi * (0.0025**2)
+     
+    #print(IndividualStepSums)
+
+    
+    for steps in range(ts):
+        
+        ratio = IndividualStepSums[steps]/lengthTotal
+        BMratio = IndividualStepSums[steps]/mass
+        
+        ratioList.append(ratio)
+        BioMassRatioList.append(BMratio)
+        
+    #(BioMassRatioList)
+    
+    return BioMassRatioList
+
+rList = CalcED(desiredTS, desiredSize)
+
+
+def calDiff(list):
+    derivList = []
+    
+    for step in range(len(list)):
+        #print(step)
+        if step == 0:
+            pass
+        else:
+            val = list[step] - list[step - 1]
+            
+            derivList.append(val)
+    
+    #print(derivList)
+    return derivList
+  
+    
+deriv = calDiff(rList)
+
+derivList =""
+
+for elt in deriv:
+    derivList=derivList+str(elt)+"\n"
+#print(strTest)
+#print(type(strTest))
+
+file = open("DerivList.txt", "w")
+
+file.write(derivList)
+
+file.close()
