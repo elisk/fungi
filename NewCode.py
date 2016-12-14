@@ -336,7 +336,11 @@ def main(steps, size):
     InitalSoilMatrix = buildSoil(size)
     #print(InitalSoilMatrix)
     
-    lenMatrix = useList('lenMatrix_199.txt')
+    named = input()
+    
+    lenMatrix = useList('lenMatrix_' + named + '.txt')
+    
+    #lenMatrix = useList('lenMatrix_199.txt')
     
     #lenMatrix = useList('lenMatrix0.txt') #close 
     
